@@ -1,15 +1,9 @@
-import {app} from "./settings";
-import {runDb} from "./db/db";
-
+import {App,} from "./app/app";
+import {compositionRootInit, container, providers} from "./app/composition.root";
 
 const port = 5000;
-const appStart =async ()=>{
-    await runDb();
-    app.listen(port, async ()=>{
-        console.log(`app start on port ${port}`);
-        console.log(`open in browser http://localhost:${port}`);
-    })
-}
 
+compositionRootInit(providers)
+const app:App = container.resolve<App>(App)
+app.start(port)
 
-appStart();
