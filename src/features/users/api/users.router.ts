@@ -1,13 +1,22 @@
-import {Router,Request, Response} from "express";
+import {Router, Request, Response} from "express";
 import {serverResponse} from "../../../testData";
+import {UsersController} from "./users.controller";
+import {App} from "../../../app/app";
+
 import {container} from "../../../app/composition.root";
-import {UsersController} from "../../../../dist/features/users/api/users.controller";
+import {inject, injectable} from "inversify";
 
+@injectable()
+export class UsersRouter {
+    router: Router= Router()
 
-export const usersRouter=Router()
-// const userController:UsersController = container.bind(UsersController)
-const userController:UsersController = container.resolve<UsersController>(UsersController)
+    constructor(@inject(UsersController) protected readonly usersController:UsersController ) {
+        console.log("UsersRouter ", this.usersController)
+    }
 
-usersRouter.get("/",async  (req: Request, res: Response)=>{
-res.json(serverResponse)
-})
+    init() {
+        this.router.post("/", this.usersController.create.bind(UsersController))
+        return this.router
+    }
+
+}

@@ -1,14 +1,18 @@
+import {inject, injectable} from "inversify";
+
 import express, {Express, NextFunction, Request, Response} from "express"
 import {tasksRouter} from "../features/tasks/api/tasks.router";
 import {authRouter} from "../features/security/api/auth.router";
-import { DBService} from "./app.data.source";
-import {inject, injectable} from "inversify";
+import {UsersRouter} from "../features/users/api/users.router";
+import {DBService} from "./app.data.source";
+
 
 @injectable()
 export class App {
     protected readonly app: Express
 
-    constructor(@inject(DBService) protected readonly dbService:DBService) {
+    constructor(@inject(DBService) protected readonly dbService: DBService,
+    @inject(UsersRouter) protected readonly usersRouter:UsersRouter) {
         this.app = express()
         this.init()
     }
@@ -30,6 +34,7 @@ export class App {
     private initRouters() {
         this.app.use("/tasks", tasksRouter)
         this.app.use("/auth", authRouter)
+        this.app.use("/users", this.usersRouter.init())
     }
 
     private initGlobalMiddlewares() {
